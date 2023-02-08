@@ -1,0 +1,90 @@
+# Default values for go-k8s.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+
+image:
+  repository: opscruiseindia/oc-k8sgw
+  k8sgw_tag: <VERSION>
+  pullPolicy: IfNotPresent
+
+logLevel: "info"
+
+envFrom:
+  secretRef: oc-gw-creds
+
+volumeMounts:
+  - name: k8s-certs-volume
+    mountPath: /var/opscruise/certs
+  - name: k8sgw-config-volume
+    mountPath: /var/opscruise/configmap
+
+volumes:
+  - name: k8s-certs-volume
+    secret:
+      secretName: oc-gw-certs
+  - name: k8sgw-config-volume
+    configMap:
+      name: k8sgw-configmap
+
+imagePullSecrets:
+  name: oc-docker-creds
+
+restartPolicy: Always
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 250Mi
+  requests:
+    cpu: 200m
+    memory: 50Mi
+
+# subjects:
+#  name: default
+#  namespace: opscruise
+
+
+
+labels: {}
+
+annotations: {}
+
+tolerations:
+
+priorityClassName: ""
+
+configMap:
+  config:
+      "gateway_config":
+          "OC_Gateway_Id": "K8-01"
+          "OC_Heartbeat_Interval_sec": 60
+          "OC_DataCompression": true
+      "kubernetes":
+          "all_config_interval_sec": 900
+          "config_update_interval_sec": 60
+          "event_update_interval_sec": 90
+      "messaging":
+          "kafka":
+              "consumer":
+                  "net":
+                      "sasl":
+                          "enable": true
+                      "tls":
+                          "enable": true
+              "producer":
+                  "number_of_producers": 1
+                  "flush":
+                      "bytes": 1572864
+                      "frequency": 1000
+                  "max_message_bytes": 20971520
+                  "net":
+                      "sasl":
+                          "enable": true
+                      "tls":
+                          "enable": true
+      "saf":
+          "file_compress": true
+          "max_file_size": 50
+          "max_files": 10
+          "store_path": "/var/opscruise/store"

@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: awsgw-configmap
+  namespace: {{ .Release.Namespace }}
+data:
+  config.json: |-
+  {{- toJson .Values.configMap.config | nindent 4 }}

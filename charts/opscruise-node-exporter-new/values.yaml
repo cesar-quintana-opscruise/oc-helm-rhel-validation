@@ -1,0 +1,89 @@
+# Default values for opscruise-node-exporter.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+name: prometheus-node-exporter
+podName: oc-node-exporter
+# namespace: opscruise
+
+image:
+  repository: opscruiseindia/oc-node-exporter
+  node_exporter_bpf_core_tag: <VERSION>
+  imagePullPolicy: IfNotPresent
+
+args:
+  procFS: --path.procfs=/host/proc
+  sysFS: --path.sysfs=/host/sys
+  webMaxRequests: --web.max-requests=1
+  reversePathPacket: --collector.conntrackext.forward-and-reverse-path-packets
+  enableAllMetrics: --collector.ocflowbpfcollector.enable-all-metrics
+  interface: --collector.ocflowbpfcollector.interface
+
+interface: ^ens|^cali|^eth|^veth|^eni
+
+ports:
+  # containerPort: 9100
+  # hostPort: 9100
+  name: metrics
+
+resources:
+  limits:
+    memory: 600Mi
+  requests:
+    cpu: 200m
+    memory: 300Mi
+
+securityContext:
+  addNETADMIN: NET_ADMIN
+  addSYSADMIN: SYS_ADMIN
+  privileged: true
+
+neLabels:
+  k8sapp: opscruise-node-exporter
+  version: v0.15.2
+  opscruisePerimeter: opscruise
+  opscruiseGroup: exporters
+  opscruiseProduct: NodeExporter
+  opscruiseStream: opscruise
+  kubernetesIoClusterService: true
+  addonmanagerKubernetesIoMode: Reconcile
+
+volumeMounts:
+  etcOSReleasePath: /host/etc/os-release
+  devmountPath: /host/dev
+  procmountPath: /host/proc
+  sysmountPath: /host/sys
+  rootfsmountPath: /rootfs
+  libModulesPath: /lib/modules
+  bootPath: /boot
+  srcPath: /usr/src
+  bpfPath: /sys/fs/bpf
+  varPath: /host/var
+
+hostNetwork: true
+hostPID: true
+
+imagePullSecrets:
+  name: oc-docker-creds
+
+labels: {}
+
+annotations: {}
+
+tolerations:
+
+priorityClassName:
+
+volumes:
+  etcosreleasepath: /etc/os-release
+  procpath: /proc
+  devpath: /dev
+  syspath: /sys
+  rootfspath: /
+  libmodulespath: /lib/modules
+  bootpath: /boot
+  srcpath: /usr/src
+  bpfpath: /sys/fs/bpf
+  varpath: /var
+
+updateStrategy:
+  type: RollingUpdate

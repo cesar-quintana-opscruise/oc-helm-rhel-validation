@@ -1,0 +1,73 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-configmap
+  namespace: "{{ .Release.Namespace }}"
+data:
+  {{- $scrape_interval_x_1 := "30" -}}
+  {{- if .Values.scrape_interval }}
+  {{- $scrape_interval_x_1 = .Values.scrape_interval | toString -}}
+  {{- else if .Values.global.prometheusScrapeInterval }}
+  {{- $scrape_interval_x_1 = .Values.global.prometheusScrapeInterval | toString -}}
+  {{- end }}
+  {{- $intV := mul $scrape_interval_x_1 3 -}}
+  {{- $intV1 := sub $intV 1 -}}
+  {{- $scrape_interval_x_3 := $intV1 | toString -}}
+  {{- $intVV := mul $scrape_interval_x_1 2 -}}
+  {{- $intVV1 := sub $scrape_interval_x_1 3 -}}
+  {{- $intVV2 := add $intVV $intVV1 -}}
+  {{- $scrape_interval_x_2 := $intVV2 | toString -}}
+  {{- $NAMESPACE_FILTERS := ".*" -}}
+  {{ if .Values.global.namespaceFiltering.namespaceAllowList }}
+    {{- $NAMESPACE_FILTERS = join "|" .Values.global.namespaceFiltering.namespaceAllowList -}}
+  {{- end }}
+  {{- $K8S_CLUSTER_FQDN := "cluster.local" -}}
+  {{ if .Values.global.k8sClusterFqdn }}
+    {{- $K8S_CLUSTER_FQDN = .Values.global.k8sClusterFqdn -}}
+  {{- end }}
+
+  {{- if eq .Values.enableIstio true }}
+  # istio config map changes
+    {{- $scrapeConfigs := .Values.istioConfigMap.data.prometheus_yml.scrape_configs }}
+    {{- $prometheusYml := .Values.istioConfigMap.data.prometheus_yml }}
+    {{- $newScrapeConfigList := list }}
+    {{- $externalCadvisor := .Values.global.externalCadvisor }}
+    {{- range $idx, $scrapeConfig := $scrapeConfigs }}
+      {{- $jobName := get $scrapeConfig "job_name" }}
+      {{- if and (eq $jobName "kubernetes-nodes-cadvisor") (eq $externalCadvisor true) }}
+      {{- else }}
+      {{- $newScrapeConfigList = append $newScrapeConfigList $scrapeConfig }}
+      {{- end }}
+    {{- end }}
+    {{- $_ := set $prometheusYml "scrape_configs" $newScrapeConfigList }}
+  prometheus.yml: |-
+  {{- toYaml $prometheusYml | replace "scrape_interval_x_3" $scrape_interval_x_3 | replace "scrape_interval_x_1" $scrape_interval_x_1 | replace "scrape_interval_x_2" $scrape_interval_x_2 | nindent 6 }}
+  {{- if .Values.istioConfigMap.additionalScrapeConfigs }}
+  {{- toYaml .Values.istioConfigMap.additionalScrapeConfigs | replace "scrape_interval_x_3" $scrape_interval_x_3 | replace "scrape_interval_x_1" $scrape_interval_x_1 | replace "scrape_interval_x_2" $scrape_interval_x_2 | nindent 6 }}
+  {{- end }}
+  recording_rules.yml: |
+  {{- toYaml .Values.istioConfigMap.data.recording_rules_yml | replace "scrape_interval_x_3" $scrape_interval_x_3 | replace "scrape_interval_x_1" $scrape_interval_x_1 | replace "scrape_interval_x_2" $scrape_interval_x_2 | nindent 6 }}
+
+  # non istio config map changes
+  {{ else }}
+    {{- $scrapeConfigs := .Values.nonIstioConfigMap.data.prometheus_yml.scrape_configs }}
+    {{- $prometheusYml := .Values.nonIstioConfigMap.data.prometheus_yml }}
+    {{- $newScrapeConfigList := list }}
+    {{- $externalCadvisor := .Values.global.externalCadvisor }}
+    {{- range $idx, $scrapeConfig := $scrapeConfigs }}
+      {{- $jobName := get $scrapeConfig "job_name" }}
+      {{- if and (eq $jobName "kubernetes-nodes-cadvisor") (eq $externalCadvisor true) }}
+      {{- else }}
+      {{- $newScrapeConfigList = append $newScrapeConfigList $scrapeConfig }}
+      {{- end }}
+    {{- end }}
+    {{- $_ := set $prometheusYml "scrape_configs" $newScrapeConfigList }}
+  prometheus.yml: |-
+  {{- toYaml $prometheusYml | replace "scrape_interval_x_3" $scrape_interval_x_3 | replace "scrape_interval_x_2" $scrape_interval_x_2 | replace "scrape_interval_x_1" $scrape_interval_x_1 | replace "NAMESPACE_WHITELIST_REPLACE" $NAMESPACE_FILTERS | replace "K8S_CLUSTER_FQDN" $K8S_CLUSTER_FQDN | nindent 6 }}
+  {{- if .Values.nonIstioConfigMap.additionalScrapeConfigs }}
+  {{- toYaml .Values.nonIstioConfigMap.additionalScrapeConfigs | replace "scrape_interval_x_3" $scrape_interval_x_3 | replace "scrape_interval_x_2" $scrape_interval_x_2 | replace "scrape_interval_x_1" $scrape_interval_x_1 | replace "NAMESPACE_WHITELIST_REPLACE" $NAMESPACE_FILTERS | replace "K8S_CLUSTER_FQDN" $K8S_CLUSTER_FQDN | nindent 6 }}
+  {{- end }}
+  recording_rules.yml: |
+  {{- toYaml .Values.nonIstioConfigMap.data.recording_rules_yml | replace "scrape_interval_x_3" $scrape_interval_x_3 | replace "scrape_interval_x_2" $scrape_interval_x_2 | replace "scrape_interval_x_1" $scrape_interval_x_1 | nindent 6 }}
+  {{- end }}

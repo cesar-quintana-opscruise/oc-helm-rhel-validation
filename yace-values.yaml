@@ -1,0 +1,1293 @@
+prometheus-yace-exporter:
+    config: |-
+        apiVersion: v1alpha1
+        sts-endpoint: us-east-1
+        discovery:
+            exportedTagsOnMetrics:
+                ec:
+                - opscruise
+
+                # rds:
+                # - opscruise
+                
+                # s3:
+                # - opscruise
+                
+                # ec2:
+                # - opscruise
+                
+                # apigateway:
+                # - opscruise
+                
+                # appsync:
+                # - opscruise
+                
+                # ebs:
+                # - opscruise
+                
+                # elb:
+                # - opscruise
+                
+                # lambda:
+                # - opscruise
+                
+            jobs:
+            # Redis
+             -  regions:
+                -   us-east-1
+                -   us-east-2
+                type: ec
+                searchTags:
+                -   key: opscruise
+                    value: .*true.*
+                metrics:
+                -   name: ActiveDefragHits
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: AuthenticationFailures
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: BytesUsedForCache
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: BytesReadFromDisk
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: BytesWrittenToDisk
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: CacheHits
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: CacheMisses
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: CommandAuthorizationFailures
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: CacheHitRate
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: CurrConnections
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: CurrItems
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: CurrVolatileItems
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: DatabaseMemoryUsagePercentage
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: DatabaseMemoryUsageCountedForEvictPercentage
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: DB0AverageTTL
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: EngineCPUUtilization
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: Evictions
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: GlobalDatastoreReplicationLag
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: KeyAuthorizationFailures
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: KeysTracked
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: MemoryFragmentationRatio
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: NewConnections
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300        
+                -   name: NumItemsReadFromDisk
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: NumItemsWrittenToDisk
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300  
+                -   name: Reclaimed
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300  
+                -   name: ReplicationBytes
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300  
+                -   name: ReplicationLag
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: CPUCreditBalance
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: CPUCreditUsage
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: FreeableMemory
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: NetworkBytesIn
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: NetworkBytesOut
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: NetworkPacketsIn
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: NetworkPacketsOut
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300
+                -   name: SwapUsage
+                    statistics:
+                    -   Average
+                    period: 300
+                    length: 300 
+
+
+            # # aurora psql
+            # -   regions:
+            #     -   us-east-1
+            #     type: "rds"
+            #     searchTags:
+            #     -   key: opscruise
+            #         value: .*true.*
+            #     metrics:
+            #     -   name: CPUUtilization
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: ReadLatency
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: WriteLatency
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: ReadIOPS
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: WriteIOPS
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: ReadThroughput
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: WriteThroughput
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: VolumeBytesUsed
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: VolumeReadIOPs
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: VolumeWriteIOPs
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: BufferCacheHitRatio
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: BackupRetentionPeriodStorageUsed
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: SnapshotStorageUsed
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: TotalBackupStorageBilled
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: CommitLatency
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: CommitThroughput
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: ConnectionAttempts
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: CPUCreditBalance
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: CPUCreditUsage
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: DatabaseConnections
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: Deadlocks
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: DiskQueueDepth
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: EngineUptime
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: FreeableMemory
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: FreeLocalStorage
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: NetworkReceiveThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: NetworkThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: NetworkTransmitThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: StorageNetworkReceiveThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: StorageNetworkThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: StorageNetworkTransmitThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: EBSByteBalance%
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: EBSIOBalance%
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: AuroraReplicaLag
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: AuroraReplicaLagMaximum
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: AuroraReplicaLagMinimum
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: MaximumUsedTransactionIDs
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: ReplicationSlotDiskUsage
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: RDSToAuroraPostgreSQLReplicaLag
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+
+            # # aurora mysql
+            # -   regions:
+            #     -   us-east-1
+            #     type: "rds"
+            #     searchTags:
+            #     -   key: opscruise
+            #         value: .*true.*
+            #     metrics:
+            #     -   name: CPUUtilization
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: ReadLatency
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: WriteLatency
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: VolumeBytesUsed
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: VolumeReadIOPs
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: VolumeWriteIOPs
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: BufferCacheHitRatio
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: BackupRetentionPeriodStorageUsed
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: SnapshotStorageUsed
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: TotalBackupStorageBilled
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: CommitLatency
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: CommitThroughput
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: ConnectionAttempts
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: CPUCreditBalance
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: CPUCreditUsage
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: DatabaseConnections
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: Deadlocks
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: EngineUptime
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: FreeableMemory
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: FreeLocalStorage
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: NetworkReceiveThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: NetworkThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: NetworkTransmitThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: StorageNetworkReceiveThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: StorageNetworkThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: StorageNetworkTransmitThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: EBSByteBalance%
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: EBSIOBalance%
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: AuroraReplicaLag
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: AuroraReplicaLagMaximum
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: AuroraReplicaLagMinimum
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: AuroraReplicaLagMinimum
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: AbortedClients
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: ActiveTransactions
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: AuroraBinlogReplicaLag
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: BlockedTransactions
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: DDLLatency
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: DDLThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: DeleteLatency
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: DeleteThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: DMLLatency
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: DMLThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: InsertLatency
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: InsertThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: LoginFailures
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: NumBinaryLogFiles
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: Queries
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: ResultSetCacheHitRatio
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: RowLockTime
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: SelectLatency
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: SelectThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: SumBinaryLogSize
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: UpdateLatency
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+            #     -   name: UpdateThroughput
+            #         statistics:
+            #         -   SampleCount
+            #         period: 300
+            #         length: 300
+
+            # # apigateway
+            # -   regions:
+            #     -   us-east-1
+            #     type: "apigateway"
+            #     searchTags:
+            #     -   key: opscruise
+            #         value: .*true.*
+            #     metrics:
+            #     -   name: 4XXError
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: 5XXError
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: DataProcessed
+            #         statistics:
+            #         -   "Maximum"
+            #         -   "Minimum"
+            #         -   "Average"
+            #         period: 300
+            #         length: 300
+            #     -   name: Count
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: IntegrationLatency
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: Latency
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: CacheMissCount
+            #         statistics:
+            #         -   "Maximum"
+            #         period: 300
+            #         length: 300
+            #     -   name: CacheHitCount
+            #         statistics:
+            #         -   "Maximum"
+            #         period: 300
+            #         length: 300
+
+            # # appsync
+            # -   regions:
+            #     -   us-east-1
+            #     type: "appsync"
+            #     searchTags:
+            #     -   key: opscruise
+            #         value: .*true.*
+            #     metrics:
+            #     -   name: evictions
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: cacheMisses
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: bytesUsedForCache
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: currItems
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: reclaimed
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: cacheHits
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: 4XXError
+            #         statistics:
+            #         -   Sum
+            #         -   "SampleCount"
+            #         period: 300
+            #         length: 300
+            #     -   name: 5XXError
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: Latency
+            #         statistics:
+            #         -   "Average"
+            #         -   "p90"
+            #         -   "p50"
+            #         -   "p10"
+            #         period: 300
+            #         length: 300
+            #     -   name: ConnectSuccess
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: ConnectClientError
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: ConnectServerError
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: DisconnectSuccess
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: DisconnectClientError
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: DisconnectServerError
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: SubscribeSuccess
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: SubscribeClientError
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: SubscribeServerError
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: UnsubscribeSuccess
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: UnsubscribeClientError
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: UnsubscribeServerError
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: PublishDataMessageSuccess
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: PublishDataMessageClientError
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: PublishDataMessageServerError
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: PublishDataMessageSize
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: ActiveConnections
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: ActiveSubscriptions
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: ConnectionDuration
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+
+            # # rds
+            # -   regions:
+            #     -   us-east-1
+            #     type: "rds"
+            #     searchTags:
+            #     -   key: opscruise
+            #         value: .*true.*
+            #     metrics:
+            #     -   name: FreeStorageSpace
+            #         statistics:
+            #         -   Average
+            #         period: 60
+            #         length: 60
+            #     -   name: BinLogDiskUsage
+            #         statistics:
+            #         -   Average
+            #         period: 60
+            #         length: 60
+            #     -   name: CPUUtilization
+            #         statistics:
+            #         -   Average
+            #         -   "Maximum"
+            #         -   "Minimum"
+            #         period: 60
+            #         length: 60
+            #     -   name: DatabaseConnections
+            #         statistics:
+            #         -   Average
+            #         -   "Maximum"
+            #         -   "Minimum"
+            #         period: 60
+            #         length: 60
+            #     -   name: NetworkReceiveThroughput
+            #         statistics:
+            #         -   Average
+            #         -   "Maximum"
+            #         -   "Minimum"
+            #         period: 60
+            #         length: 60
+            #     -   name: NetworkTransmitThroughput
+            #         statistics:
+            #         -   Average
+            #         -   "Maximum"
+            #         -   "Minimum"
+            #         period: 60
+            #         length: 60
+            #     -   name: ReadIOPS
+            #         statistics:
+            #         -   Average
+            #         -   "Maximum"
+            #         -   "Minimum"
+            #         period: 60
+            #         length: 60
+            #     -   name: ReadLatency
+            #         statistics:
+            #         -   Average
+            #         -   "Maximum"
+            #         -   "Minimum"
+            #         period: 60
+            #         length: 60
+            #     -   name: ReadThroughput
+            #         statistics:
+            #         -   Average
+            #         -   "Maximum"
+            #         -   "Minimum"
+            #         period: 60
+            #         length: 60
+            #     -   name: WriteIOPS
+            #         statistics:
+            #         -   Average
+            #         -   "Maximum"
+            #         -   "Minimum"
+            #         period: 60
+            #         length: 60
+            #     -   name: WriteLatency
+            #         statistics:
+            #         -   Average
+            #         -   "Maximum"
+            #         -   "Minimum"
+            #         period: 60
+            #         length: 60
+            #     -   name: WriteThroughput
+            #         statistics:
+            #         -   Average
+            #         -   "Maximum"
+            #         -   "Minimum"
+            #         period: 60
+            #         length: 60
+
+            # # lambda
+            # -   regions:
+            #     -   us-east-1
+            #     type: "lambda"
+            #     searchTags:
+            #     -   key: opscruise
+            #         value: .*true.*
+            #     metrics:
+            #     -   name: Invocations
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: Errors
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: DeadLetterErrors
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: DestinationDeliveryFailures
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: Throttles
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: ProvisionedConcurrencyInvocations
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: ProvisionedConcurrencySpilloverInvocations
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: Duration
+            #         statistics:
+            #         -   "Average"
+            #         -   "Maximum"
+            #         -   "p95"
+            #         period: 300
+            #         length: 300
+            #     -   name: IteratorAge
+            #         statistics:
+            #         -   Average
+            #         -   "Maximum"
+            #         period: 300
+            #         length: 300
+            #     -   name: ConcurrentExecutions
+            #         statistics:
+            #         -   "Maximum"
+            #         period: 300
+            #         length: 300
+            #     -   name: ProvisionedConcurrentExecutions
+            #         statistics:
+            #         -   "Maximum"
+            #         period: 300
+            #         length: 300
+            #     -   name: ProvisionedConcurrencyUtilization
+            #         statistics:
+            #         -   "Maximum"
+            #         period: 300
+            #         length: 300
+            #     -   name: UnreservedConcurrentExecutions
+            #         statistics:
+            #         -   Maximum
+            #         period: 300
+            #         length: 300
+
+            # # elb
+            # -   regions:
+            #     -   us-east-1
+            #     type: "elb"
+            #     searchTags:
+            #     -   key: opscruise
+            #         value: .*true.*
+            #     metrics:
+            #     -   name: HealthyHostCount
+            #         statistics:
+            #         -   "Average"
+            #         -   "Maximum"
+            #         period: 60
+            #         length: 60
+            #     -   name: BackendConnectionErrors
+            #         statistics:
+            #         -   Sum
+            #         period: 60
+            #         length: 60
+            #     -   name: Latency
+            #         statistics:
+            #         -   "Average"
+            #         -   "Maximum"
+            #         period: 60
+            #         length: 60
+            #     -   name: RequestCount
+            #         statistics:
+            #         -   Sum
+            #         period: 60
+            #         length: 60
+            #     -   name: SpilloverCount
+            #         statistics:
+            #         -   Sum
+            #         period: 60
+            #         length: 60
+            #     -   name: SurgeQueueLength
+            #         statistics:
+            #         -   "Maximum"
+            #         period: 60
+            #         length: 60
+            #     -   name: UnHealthyHostCount
+            #         statistics:
+            #         -   "Average"
+            #         -   "Maximum"
+            #         period: 60
+            #         length: 60
+            #     -   name: HTTPCode_Backend_2XX
+            #         statistics:
+            #         -   Sum
+            #         period: 60
+            #         length: 60
+            #     -   name: HTTPCode_Backend_3XX
+            #         statistics:
+            #         -   Sum
+            #         period: 60
+            #         length: 60
+            #     -   name: HTTPCode_Backend_4XX
+            #         statistics:
+            #         -   Sum
+            #         period: 60
+            #         length: 60
+            #     -   name: HTTPCode_Backend_5XX
+            #         statistics:
+            #         -   Sum
+            #         period: 60
+            #         length: 60
+            #     -   name: HTTPCode_ELB_4XX
+            #         statistics:
+            #         -   Sum
+            #         period: 60
+            #         length: 60
+            #     -   name: HTTPCode_ELB_5XX
+            #         statistics:
+            #         -   Sum
+            #         period: 60
+            #         length: 60
+
+            # # ebs
+            # -   regions:
+            #     -   us-east-1
+            #     type: "ebs"
+            #     searchTags:
+            #     -   key: opscruise
+            #         value: .*true.*
+            #     metrics:
+            #     -   name: VolumeReadBytes
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: VolumeReadOps
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: VolumeWriteOps
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: VolumeQueueLength
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: VolumeThroughputPercentage
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+
+            # # ec2
+            # -   regions:
+            #     -   us-east-1
+            #     type: "ec2"
+            #     searchTags:
+            #     -   key: opscruise
+            #         value: .*true.*
+            #     metrics:
+            #     -   name: CPUCreditUsage
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: CPUCreditBalance
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: CPUSurplusCreditBalance
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: CPUSurplusCreditsCharged
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: CPUUtilization
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: DiskReadOps
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: DiskWriteOps
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: DiskReadBytes
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: DiskWriteBytes
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: NetworkIn
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: NetworkOut
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: NetworkPacketsIn
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: NetworkPacketsOut
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+
+            # # s3
+            # -   regions:
+            #     -   us-east-1
+            #     type: "s3"
+            #     searchTags:
+            #     -   key: opscruise
+            #         value: .*true.*
+            #     metrics:
+            #     -   name: AllRequests
+            #         statistics:
+            #         -   Sum
+            #         period: 300
+            #         length: 300
+            #     -   name: TotalRequestLatency
+            #         statistics:
+            #         -   "Maximum"
+            #         -   "Average"
+            #         period: 300
+            #         length: 300
+            #     -   name: FirstByteLatency
+            #         statistics:
+            #         -   "Maximum"
+            #         -   "Average"
+            #         period: 300
+            #         length: 300
+            #     -   name: 5xxErrors
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300
+            #     -   name: 4xxErrors
+            #         statistics:
+            #         -   Average
+            #         period: 300
+            #         length: 300

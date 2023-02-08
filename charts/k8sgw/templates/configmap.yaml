@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8sgw-configmap
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- $NAMESPACE_K8sGW_FILTER := "" -}}
+  {{ if .Values.global.namespaceFiltering.namespaceAllowList }}
+    {{- $NAMESPACE_K8sGW_FILTER = join "\",\"" .Values.global.namespaceFiltering.namespaceAllowList -}}
+  {{- end }}
+  config.json: |-
+  {{- toJson .Values.configMap.config | replace "NAMESPACE_K8sGW_FILTER" $NAMESPACE_K8sGW_FILTER | nindent 4 }}

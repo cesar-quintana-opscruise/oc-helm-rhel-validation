@@ -1,0 +1,59 @@
+# Default values for go-k8s.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: cadvisor
+k8sapp: cadvisor-logging
+# namespace: collectors
+opscruisePerimeter: opscruise
+opscruiseGroup: exporters
+opscruiseProduct: cAdvisor
+opscruiseStream: opscruise
+
+image:
+  repository: gcr.io/google_containers/cadvisor
+  tag: v0.35.0
+
+labels: {}
+
+annotations: {}
+
+tolerations:
+
+priorityClassName:
+
+ports:
+  name: http
+  containerPort: 8080
+  protocol: TCP
+
+volumeMounts:
+  rootfsmountPath: /rootfs
+  rootfsname: rootfs
+  rootfsreadOnly: true
+  varrunmountPath: /var/run
+  varname: var-run
+  varrunreadOnly: false
+  sysmountPath: /sys
+  sysname: sys
+  sysreadOnly: true
+  dockermountPath: /var/lib/docker
+  dockername: docker
+  dockerreadOnly: true
+  diskmountPath: /dev/disk
+  diskname: disk
+  diskreadOnly: true
+
+terminationGracePeriodSeconds: 30
+
+volumes:
+  rootfsname: rootfs
+  rootfspath: /
+  runname: var-run
+  runpath: /var/run
+  sysname: sys
+  syspath: /sys
+  dockername: docker
+  dockerpath: /var/lib/docker
+  diskname: disk
+  diskpath: /dev/disk

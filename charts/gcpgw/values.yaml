@@ -1,0 +1,183 @@
+# Default values for azuregw.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+image:
+  repository: opscruiseindia/oc-gcpgw
+  gcpgw_tag: <VERSION>
+  pullPolicy: IfNotPresent
+
+restartPolicy: Always
+
+volumeMounts:
+  - name: gcpgw-config
+    mountPath: /opt/opscruise/configs/GcpGatewayConfig.json
+    subPath: GcpGatewayConfig.json
+  - name: gcpgw-cert
+    mountPath: /etc/ssl/certs/gcpgw-cert.pem
+    subPath: gcpgw-cert.pem
+  - name: gcp-creds
+    mountPath: /opt/opscruise/configs/gcp-creds.json
+    subPath: gcp-creds.json
+
+envFrom:
+  - configMapRef:
+      name: gcpgw-env-config
+  - secretRef:
+      name: jgateway-secret
+  - secretRef:
+      name: gcp-creds
+
+volumes:
+  - name: gcpgw-config
+    configMap:
+      name: gcpgw-config
+  - name: gcpgw-cert
+    secret:
+      secretName: oc-gw-certs
+  - name: gcp-creds
+    secret:
+      secretName: gcp-creds
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+labels: {}
+
+annotations: {}
+
+tolerations:
+
+priorityClassName: ""
+
+imagePullSecrets:
+  name: oc-docker-creds
+
+#env config
+config:
+  meta:
+    name: gcpgw-env-config
+  oauthWithSsl: "true"
+  oauthLoginEndpoint: "/protocol/openid-connect/token"
+  oauthLoginGrantType: "client_credentials"
+  oauthLoginScope: "openid"
+  oauthIntrospectEndpoint: "/protocol/openid-connect/token/introspect"
+  googleApplicationCredentials: "/opt/opscruise/configs/gcp-creds.json"
+  oauthAcceptUnsecureServer: "false"
+  kafka:
+    sasl: "true"
+  gcp:
+    gcpGatewayJson: "/opt/opscruise/configs/GcpGatewayConfig.json"
+  quarkus:
+    httpPort: "8093"
+  gatewayName: "GCPGW"
+  gatewayKind: "gcp"
+logLevel: "INFO"
+
+#configmap
+configMap:
+  config:
+    "filteringEnabled" : false
+    "serviceLabel" : "opscruise"
+    "configsLabel" : "opscruise-configs"
+    "metricsLabel" : "opscruise-metrics"
+    "enabledValue" : "enabled"
+    "resourcePollIntervalSeconds" : 60
+    "configPollIntervalSeconds" : 600
+    "metricPollIntervalSeconds" : 60
+    "metrics" :
+      -   "compute.googleapis.com/instance/cpu/utilization"
+      -   "compute.googleapis.com/instance/disk/max_read_bytes_count"
+      -   "compute.googleapis.com/instance/disk/max_write_bytes_count"
+      -   "compute.googleapis.com/instance/disk/read_bytes_count"
+      -   "compute.googleapis.com/instance/disk/write_bytes_count"
+      -   "compute.googleapis.com/instance/memory/balloon/ram_size"
+      -   "compute.googleapis.com/instance/memory/balloon/ram_used"
+      -   "compute.googleapis.com/instance/memory/balloon/swap_in_bytes_count"
+      -   "compute.googleapis.com/instance/memory/balloon/swap_out_bytes_count"
+      -   "compute.googleapis.com/instance/network/received_bytes_count"
+      -   "compute.googleapis.com/instance/network/received_packets_count"
+      -   "compute.googleapis.com/instance/network/sent_bytes_count"
+      -   "compute.googleapis.com/instance/network/sent_packets_count"
+      -   "loadbalancing.googleapis.com/https/backend_latencies|ALIGN_DELTA"
+      -   "loadbalancing.googleapis.com/https/backend_request_bytes_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/https/backend_request_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/https/backend_response_bytes_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/https/frontend_tcp_rtt|ALIGN_DELTA"
+      -   "loadbalancing.googleapis.com/https/internal/backend_latencies|ALIGN_DELTA"
+      -   "loadbalancing.googleapis.com/https/internal/request_bytes_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/https/internal/request_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/https/internal/response_bytes_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/https/internal/total_latencies|ALIGN_DELTA"
+      -   "loadbalancing.googleapis.com/https/request_bytes_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/https/request_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/https/response_bytes_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/https/total_latencies|ALIGN_DELTA"
+      -   "loadbalancing.googleapis.com/l3/external/egress_bytes_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/l3/external/ingress_bytes_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/l3/external/ingress_packets_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/l3/external/rtt_latencies|ALIGN_DELTA"
+      -   "loadbalancing.googleapis.com/l3/internal/egress_bytes_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/l3/internal/egress_packets_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/l3/internal/ingress_bytes_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/l3/internal/ingress_packets_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/l3/internal/rtt_latencies|ALIGN_DELTA"
+      -   "loadbalancing.googleapis.com/tcp_ssl_proxy/closed_connections|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/tcp_ssl_proxy/egress_bytes_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/tcp_ssl_proxy/frontend_tcp_rtt|ALIGN_DELTA"
+      -   "loadbalancing.googleapis.com/tcp_ssl_proxy/ingress_bytes_count|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/tcp_ssl_proxy/new_connections|ALIGN_RATE"
+      -   "loadbalancing.googleapis.com/tcp_ssl_proxy/open_connections|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/auto_failover_request_count|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/available_for_failover|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/cpu/reserved_cores|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/cpu/usage_time|ALIGN_RATE"
+      -   "cloudsql.googleapis.com/database/cpu/utilization|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/disk/bytes_used|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/disk/quota|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/disk/read_ops_count|ALIGN_RATE"
+      -   "cloudsql.googleapis.com/database/disk/utilization|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/disk/write_ops_count|ALIGN_RATE"
+      -   "cloudsql.googleapis.com/database/instance_state|ALIGN_COUNT_TRUE"
+      -   "cloudsql.googleapis.com/database/memory/quota|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/memory/total_usage|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/memory/usage|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/memory/utilization|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/network/connections|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/network/received_bytes_count|ALIGN_RATE"
+      -   "cloudsql.googleapis.com/database/network/sent_bytes_count|ALIGN_RATE"
+      -   "cloudsql.googleapis.com/database/postgresql/external_sync/initial_sync_complete|ALIGN_COUNT_TRUE"
+      -   "cloudsql.googleapis.com/database/postgresql/external_sync/max_replica_byte_lag|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/aggregate/execution_time|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/aggregate/io_time|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/aggregate/latencies|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/aggregate/lock_time|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/aggregate/row_count|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/aggregate/shared_blk_access_count|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/perquery/execution_time|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/perquery/io_time|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/perquery/latencies|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/perquery/lock_time|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/perquery/row_count|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/perquery/shared_blk_access_count|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/pertag/execution_time|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/pertag/io_time|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/pertag/latencies|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/pertag/lock_time|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/pertag/row_count|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/insights/pertag/shared_blk_access_count|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/postgresql/num_backends|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/postgresql/replication/replica_byte_lag|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/postgresql/transaction_count|ALIGN_RATE"
+      -   "cloudsql.googleapis.com/database/replication/network_lag|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/replication/replica_lag|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/replication/state|ALIGN_COUNT_TRUE"
+      -   "cloudsql.googleapis.com/database/state|ALIGN_NONE"
+      -   "cloudsql.googleapis.com/database/up|ALIGN_MEAN"
+      -   "cloudsql.googleapis.com/database/uptime|ALIGN_RATE"

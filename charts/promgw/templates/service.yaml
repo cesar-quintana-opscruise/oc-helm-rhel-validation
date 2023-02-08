@@ -1,0 +1,18 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.service.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    opscruisePerimeter: {{ .Values.service.opscruisePerimeter }}
+    opscruiseGroup: {{ .Values.service.opscruiseGroup }}
+    opscruiseProduct: {{ .Values.service.opscruiseProduct }}
+    opscruiseStream: {{ .Values.service.opscruiseStream }}
+spec:
+  selector:
+    app: {{ .Values.service.app }}
+
+  ports:
+    - protocol: {{ .Values.service.protocol }}
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}

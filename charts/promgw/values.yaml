@@ -1,0 +1,110 @@
+# Default values for promGW.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: promgw-deployment
+# namespace: opscruise
+app: promgw
+opscruisePerimeter: opscruise
+opscruiseGroup: gateways
+opscruiseProduct: promGW
+opscruiseStream: opscruise
+
+replicaCount: 1
+
+image:
+  repository: opscruiseindia/oc-promgw
+  promgw_tag: <VERSION>
+  pullPolicy: IfNotPresent
+  containerPort: 8080
+
+logLevel: "info"
+
+envFrom:
+  secretRefname: oc-gw-creds
+
+ports:
+ containerPort: 8080
+
+volumeMounts:
+  - name: promgw-certs-volume
+    mountPath: /var/opscruise/certs
+  - name: promgw-config-volume
+    mountPath: /var/opscruise/configmap
+
+volumes:
+  - name: promgw-certs-volume
+    secret:
+      secretName: oc-gw-certs
+  - name: promgw-config-volume
+    configMap:
+      name: promgw-configmap
+
+imagePullSecrets:
+  name: oc-docker-creds
+
+restartPolicy: Always
+
+service:
+  app: promgw
+  name: promgw-service
+  # namespace: opscruise
+  opscruisePerimeter: opscruise
+  opscruiseGroup: gateways
+  opscruiseProduct: promGW
+  opscruiseStream: opscruise
+  protocol: TCP
+  port: 8585
+  targetPort: 8080
+
+resources:
+ limits:
+  cpu: 500m
+  memory: 300Mi
+ requests:
+  cpu: 200m
+  memory: 50Mi
+
+labels: {}
+
+annotations: {}
+
+tolerations:
+
+priorityClassName: ""
+
+configMap:
+  config:
+    "gateway_config":
+        "OC_Gateway_Id": "PR-01"
+        "OC_Heartbeat_Interval_sec": 60
+    "messaging":
+        "kafka":
+            "consumer":
+                "net":
+                    "sasl":
+                        "enable": true
+                    "tls":
+                        "enable": true
+            "producer":
+                "number_of_producers": 5
+                "flush":
+                    "bytes": 1572864
+                    "frequency": 1000
+                "max_message_bytes": 20971520
+                "net":
+                    "sasl":
+                        "enable": true
+                    "tls":
+                        "enable": true
+    "prometheus":
+        "listen_ip": "0.0.0.0"
+        "listen_port": 8080
+        "max_number_of_clients_active": 10
+        "leader_idle_timeout": 60
+        "non_leader_cache_timeout": 65
+    "saf":
+        "max_file_size": 50
+        "max_files": 10
+        "file_compress": true
+        "store_path": "/var/opscruise/store"

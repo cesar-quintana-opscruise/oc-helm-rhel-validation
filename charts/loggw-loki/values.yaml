@@ -1,0 +1,88 @@
+# Default values for go-k8s.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+image:
+  repository: opscruiseindia/loggw-loki
+  loggw_loki_tag: <VERSION>
+  pullPolicy: IfNotPresent
+
+envFrom:
+  configMapRef: loggw-loki-env-config
+  secretRef: jgateway-secret
+
+volumeMounts:
+  lokiParser:
+    name: loggw-loki-parser-config
+    mountPath: /opt/opscruise/cache/parser-config.json
+    subPath: parser-config.json
+  lokiCert:
+    name: loggw-loki-cert
+    mountPath: /etc/ssl/certs/loggw-cert.pem
+    subPath: loggw-cert.pem
+
+imagePullSecrets:
+  name: oc-docker-creds
+
+restartPolicy: Always
+
+secret:
+  secretName: oc-gw-certs
+
+volumes:
+  lokiParser:
+    name: loggw-loki-parser-config
+    configMap:
+      name: loggw-loki-parser-config
+  lokiCert:
+    name: loggw-loki-cert
+    secret:
+      secretName: oc-gw-certs
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1024Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+#env config yaml
+config:
+  realm_path: /auth/realms/
+  meta:
+    name: loggw-loki-env-config
+  oauthWithSsl: "true"
+  oauthLoginEndpoint: "/protocol/openid-connect/token"
+  oauthLoginGrantType: "client_credentials"
+  oauthLoginScope: "openid"
+  oauthIntrospectEndpoint: "/protocol/openid-connect/token/introspect"
+  oauthAcceptUnsecureServer: "false"
+  jgateway:
+    lokiQueries: "%7Bnamespace%3D%7e%22.*%22%7D"
+    cacheDir: "/opt/opscruise/cache"
+    lokiHost: "loki.opscruise.svc.K8S_CLUSTER_FQDN:3100"
+    logLogParserConfigFilePath: "parser-config.json"
+  loggw:
+    lokiMaxLookBackMins: "10"
+    lokiDelayForSecs: "3"
+  quarkus:
+    httpPort: "8083"
+  gatewayName: "LOGGWLOKI"
+  gatewayKind: "loggwloki"
+logLevel: "INFO"
+
+# Parser config
+parserConfig:
+  meta:
+    name: loggw-loki-parser-config
+  file: parser-config.json
+
+
+labels: {}
+
+annotations: {}
+
+tolerations:
+
+priorityClassName: ""
