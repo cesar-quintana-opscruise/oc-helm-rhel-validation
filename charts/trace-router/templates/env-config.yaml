@@ -1,9 +1,0 @@
-kind: ConfigMap
-apiVersion: v1
-metadata:
-    name: trace-router-env-config
-    namespace: {{ .Release.Namespace }}
-data:
-    {{- range $key, $val := .Values.configMap.envConfig }}
-    {{ $key }}: "{{ $val }}"
-    {{- end }}

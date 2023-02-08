@@ -1,8 +1,0 @@
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name:  azuregw-config
-  namespace: {{ .Release.Namespace }}
-data:
-  azureGatewayConfig.json: |-
-  {{- toJson .Values.configMap.config | nindent 4 }}

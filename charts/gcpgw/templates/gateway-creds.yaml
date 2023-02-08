@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: gcp-creds
-  namespace: {{ .Release.Namespace }}
-type: Opaque
-data:
-  gcp-creds.json: {{ .Values.gcpCreds | b64enc }}
