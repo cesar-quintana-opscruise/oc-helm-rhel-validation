@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-nginx-exporter
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: nginx-exp
+{{- if .Values.service.labels }}
+{{- toYaml .Values.service.labels | trim | nindent 4 }}
+{{- end }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.containerport }}
+      name: "nexporter"
+      targetPort: {{ .Values.containerport }}
+      protocol: TCP
+  selector:
+    app: nginx-exp
+    release: {{ .Release.Name }}

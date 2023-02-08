@@ -1,0 +1,135 @@
+{{- if eq .Values.global.externalCadvisor true }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    opscruise-chart-version: {{ .Values.global.opscruiseChartVersion }}
+    k8s-app: {{ .Values.k8sapp }}
+  name:  {{ .Values.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      name: {{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        name: {{ .Values.name }}
+        opscruisePerimeter: {{ .Values.opscruisePerimeter }}
+        opscruiseGroup: {{ .Values.opscruiseGroup }}
+        opscruiseProduct: {{ .Values.opscruiseProduct }}
+        opscruiseStream: {{ .Values.opscruiseStream }}
+        {{- if .Values.labels }}
+        {{- range $label, $val := .Values.labels }}
+        {{ $label }}: {{ $val }}
+        {{- end }}
+        {{- end }}
+
+      annotations:
+        opscruise.prometheus/path: {{ .Values.prometheus_scrape_config.path }}
+        opscruise.prometheus/port: {{ tpl .Values.prometheus_scrape_config.port . }}
+        opscruise.prometheus/scheme: {{ .Values.prometheus_scrape_config.scheme }}
+        opscruise.prometheus/scrape: "{{ .Values.prometheus_scrape_config.scrape }}"
+        {{- if .Values.annotations }}
+        {{- range $annotation, $val := .Values.annotations }}
+        {{ $annotation }}: {{ $val }}
+        {{- end }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      containers:
+        -
+          args:
+            {{- toYaml .Values.args | nindent 12 }}
+            {{- range .Values.customArgs }}
+            - "{{ . }}"
+            {{- end}}
+            
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+
+          name: {{ .Values.name }}
+          ports:
+            -
+              containerPort: {{ .Values.ports.containerPort }}
+              name: {{ .Values.ports.name }}
+              protocol: {{ .Values.ports.protocol }}
+          volumeMounts:
+            -
+              mountPath: {{ .Values.volumeMounts.rootfsmountPath }}
+              name: {{ .Values.volumeMounts.rootfsname }}
+              readOnly: {{ .Values.volumeMounts.rootfsreadOnly }}
+            -
+              mountPath: {{ .Values.volumeMounts.varrunmountPath }}
+              name: {{ .Values.volumeMounts.varname }}
+              readOnly: {{ .Values.volumeMounts.varrunreadOnly }}
+            -
+              mountPath: {{ .Values.volumeMounts.sysmountPath }}
+              name: {{ .Values.volumeMounts.sysname }}
+              readOnly: {{ .Values.volumeMounts.sysreadOnly }}
+            -
+              mountPath: {{ .Values.volumeMounts.dockermountPath }}
+              name: {{ .Values.volumeMounts.dockername }}
+              readOnly: {{ .Values.volumeMounts.dockerreadOnly }}
+            -
+              mountPath: {{ .Values.volumeMounts.diskmountPath }}
+              name: {{ .Values.volumeMounts.diskname }}
+              readOnly: {{ .Values.volumeMounts.diskreadOnly }}
+
+          resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+          
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      hostNetwork: {{ .Values.hostNetwork }}
+      hostPID: {{ .Values.hostPID }}
+      tolerations:
+      {{- if .Values.tolerations }}
+      {{- toYaml .Values.tolerations | nindent 6 }}
+      {{- else if .Values.global.tolerations }}
+      {{- toYaml .Values.global.tolerations | nindent 6 }}
+      {{- end }}
+      {{- if .Values.global.daemonsetTolerations }}
+      {{- toYaml .Values.global.daemonsetTolerations | nindent 6 }}
+      {{- end }}
+
+      {{- if .Values.affinity }}
+      affinity:
+      {{- toYaml .Values.affinity | nindent 8 }}
+      {{- else if .Values.global.affinity }}
+      affinity:
+      {{- toYaml .Values.global.affinity | nindent 8 }}
+      {{- end }}
+      
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
+      volumes:
+        -
+          hostPath:
+            path: {{ .Values.volumes.rootfspath }}
+          name: {{ .Values.volumes.rootfsname }}
+        -
+          hostPath:
+            path: {{ .Values.volumes.runpath }}
+          name: {{ .Values.volumes.runname }}
+        -
+          hostPath:
+            path: {{ .Values.volumes.syspath }}
+          name: {{ .Values.volumes.sysname }}
+        -
+          hostPath:
+            path: {{ .Values.volumes.dockerpath }}
+          name: {{ .Values.volumes.dockername }}
+        -
+          hostPath:
+            path: {{ .Values.volumes.diskpath }}
+          name: {{ .Values.volumes.diskname }}
+{{- end }}

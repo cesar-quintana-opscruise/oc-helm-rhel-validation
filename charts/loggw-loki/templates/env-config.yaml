@@ -1,0 +1,33 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: "{{ .Values.config.meta.name }}"
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- $K8S_CLUSTER_FQDN := "cluster.local" -}}
+  {{ if .Values.global.k8sClusterFqdn }}
+    {{- $K8S_CLUSTER_FQDN = .Values.global.k8sClusterFqdn -}}
+  {{- end }}
+  OAUTH_WITH_SSL: "{{ .Values.config.oauthWithSsl }}"
+  OAUTH_LOGIN_ENDPOINT: "{{ .Values.config.oauthLoginEndpoint }}"
+  OAUTH_LOGIN_GRANT_TYPE: "{{ .Values.config.oauthLoginGrantType }}"
+  OAUTH_LOGIN_SCOPE: "{{ .Values.config.oauthLoginScope }}"
+  OAUTH_INTROSPECT_ENDPOINT: "{{ .Values.config.oauthIntrospectEndpoint }}"
+  OAUTH_ACCEPT_UNSECURE_SERVER: "{{ .Values.config.oauthAcceptUnsecureServer }}"
+  opscruise.jgateway.loki.queries: "{{ .Values.config.jgateway.lokiQueries }}"
+  opscruise.jgateway.cache.dir: "{{ .Values.config.jgateway.cacheDir }}"
+  opscruise.jgateway.loki.host: "{{ .Values.config.jgateway.lokiHost | replace "K8S_CLUSTER_FQDN" $K8S_CLUSTER_FQDN }}"
+  opscruise.jgateway.log.logParserConfigFilePath: "{{ .Values.config.jgateway.logLogParserConfigFilePath }}"
+  kafka.bootstrap.servers: "{{ .Values.global.gatewayCreds.environment.OPSCRUISE_ENDPOINT }}"
+  kafka.sasl: "{{ .Values.config.kafka.sasl }}"
+  kafka.sasl.jaas.config: "{{ .Values.config.kafka.saslJaasConfig }}"
+  kafka.security.protocol: "{{ .Values.config.kafka.securityProtocol }}"
+  kafka.sasl.mechanism: "{{ .Values.config.kafka.saslMechanism }}"
+  kafka.sasl.login.callback.handler.class: "{{ .Values.config.kafka.saslLoginCallbackHandlerClass }}"
+  kafka.ssl.verify: "{{ .Values.config.kafka.sslVerify }}"
+  quarkus.http.port: "{{ .Values.config.quarkus.httpPort }}"
+  quarkus.log.level: "{{ .Values.logLevel }}"
+  opscruise.loggw.loki.max_look_back_mins: "{{ .Values.config.loggw.lokiMaxLookBackMins }}"
+  opscruise.loggw.loki.delay_for_secs: "{{ .Values.config.loggw.lokiDelayForSecs }}"
+  gatewayName: "{{ .Values.config.gatewayName }}"
+  gatewayKind: "{{ .Values.config.gatewayKind }}"

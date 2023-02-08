@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: {{ .Values.k8sapp }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    opscruise-chart-version: {{ .Values.global.opscruiseChartVersion }}
+  name: {{ template "fullname" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      k8s-app: {{ .Values.k8sapp }}
+  template:
+    metadata:
+      labels:
+        k8s-app: {{ .Values.k8sapp }}
+        opscruiseGroup: {{ .Values.opscruiseGroup }}
+        opscruisePerimeter: {{ .Values.opscruisePerimeter }}
+        opscruiseProduct: {{ .Values.opscruiseProduct }}
+        opscruiseStream: {{ .Values.opscruiseStream }}
+        {{- if .Values.labels }}
+        {{- range $label, $val := .Values.labels }}
+        {{ $label }}: {{ $val }}
+        {{- end }}
+        {{- end }}
+
+      {{- if .Values.annotations }}
+      annotations:
+        opscruise.prometheus/path: {{ .Values.prometheus_scrape_config.path }}
+        opscruise.prometheus/port: {{ tpl .Values.prometheus_scrape_config.port . }}
+        opscruise.prometheus/scheme: {{ .Values.prometheus_scrape_config.scheme }}
+        opscruise.prometheus/scrape: "{{ .Values.prometheus_scrape_config.scrape }}"
+        {{- range $annotation, $val := .Values.annotations }}
+        {{ $annotation }}: {{ $val }}
+        {{- end }}
+      {{- end }}
+    spec:
+      containers:
+        -
+          {{- if .Values.global.namespaceFiltering.namespaceAllowList }}
+          args:
+          - --namespaces={{- join "," .Values.global.namespaceFiltering.namespaceAllowList }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          name: {{ .Values.name }}
+          ports:
+            -
+              containerPort: {{ .Values.ports.containerPort1 }}
+              name: {{ .Values.ports.name1 }}
+            -
+              containerPort: {{ .Values.ports.containerPort2 }}
+              name: {{ .Values.ports.name2 }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              port: {{ .Values.readinessProbe.port }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+          
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+
+      {{- if .Values.tolerations }}
+      tolerations:
+      {{- toYaml .Values.tolerations | nindent 6 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+      {{- toYaml .Values.global.tolerations | nindent 6 }}
+      {{- end }}
+
+      {{- if .Values.affinity }}
+      affinity:
+      {{- toYaml .Values.affinity | nindent 8 }}
+      {{- else if .Values.global.affinity }}
+      affinity:
+      {{- toYaml .Values.global.affinity | nindent 8 }}
+      {{- end }}
+
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}

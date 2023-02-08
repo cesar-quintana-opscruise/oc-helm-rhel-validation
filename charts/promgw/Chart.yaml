@@ -1,0 +1,4 @@
+apiVersion: v2
+description: A Helm chart for Prometheus gateway
+name: promgw
+version: 0.1.0

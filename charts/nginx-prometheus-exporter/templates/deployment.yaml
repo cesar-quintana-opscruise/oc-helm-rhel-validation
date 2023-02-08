@@ -1,0 +1,67 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ .Release.Name }}-nginx-exporter
+  namespace: {{ .Release.Namespace }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    opscruise-chart-version: {{ .Values.global.opscruiseChartVersion }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: nginx-exp
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        opscruise.prometheus/path: {{ .Values.prometheus_scrape_config.path }}
+        opscruise.prometheus/port: {{ tpl .Values.prometheus_scrape_config.port . }}
+        opscruise.prometheus/scheme: {{ .Values.prometheus_scrape_config.scheme }}
+        opscruise.prometheus/scrape: "{{ .Values.prometheus_scrape_config.scrape }}"
+        {{- if .Values.annotations }}
+        {{- range $annotation, $val := .Values.annotations }}
+        {{ $annotation }}: {{ $val }}
+        {{- end }}
+        {{- end }}
+      labels:
+        app: nginx-exp
+        release: {{ .Release.Name }}
+{{- if .Values.podLabels }}
+{{- toYaml .Values.podLabels | trim | nindent 8 }}
+{{- end }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args:
+          {{- toYaml .Values.args | nindent 10 }}
+        ports:
+          - name: "nexporter"
+            containerPort: {{ .Values.containerport }}
+            protocol: TCP
+      {{- if .Values.tolerations }}
+      tolerations:
+      {{- toYaml .Values.tolerations | nindent 6 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+      {{- toYaml .Values.global.tolerations | nindent 6 }}
+      {{- end }}
+
+      {{- if .Values.affinity }}
+      affinity:
+      {{- toYaml .Values.affinity | nindent 8 }}
+      {{- else if .Values.global.affinity }}
+      affinity:
+      {{- toYaml .Values.global.affinity | nindent 8 }}
+      {{- end }}
+
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
+
+      {{- if .Values.global.hostAliases }}
+      hostAliases:
+        {{- toYaml .Values.global.hostAliases | nindent 6 }}
+      {{- end }}

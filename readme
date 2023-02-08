@@ -1,0 +1,11 @@
+Dependency updates:
+Jaeger:
+  version: 0.47.0
+  Untar Jaeger-0.47.0.tgz
+  Added grpc ports in the query-deploy.yaml
+  Created jaeger package.
+  moved to the opscruise-helm-bitbucket.io/charts.
+
+  Created folder jaeger in the opscruise-helm-bitbucket.io/charts to add service.yaml
+  opscruise-helm-bitbucket.io/charts/jaeger/Chart.yaml name and version should be same as jaeger.tgz
+

@@ -1,0 +1,107 @@
+# Default values for go-k8s.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+
+image:
+  repository: opscruiseindia/oc-awsgw
+  awsgw_tag: <VERSION>
+  pullPolicy: IfNotPresent
+
+logLevel: "info"
+
+envFrom:
+  secretRefname1: oc-gw-creds
+  secretRefname2: oc-aws-credential
+
+volumeMounts:
+  - name: awsgw-certs-volume
+    mountPath: /var/opscruise/certs
+  - name: awsgw-config-volume
+    mountPath: /var/opscruise/configmap
+
+volumes:
+  - name: awsgw-certs-volume
+    secret:
+      secretName: oc-gw-certs
+  - name: awsgw-config-volume
+    configMap:
+      name: awsgw-configmap
+
+imagePullSecrets:
+  name: oc-docker-creds
+
+restartPolicy: Always
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 250Mi
+  requests:
+    cpu: 200m
+    memory: 50Mi
+
+serviceAccountName: aws-assume-service-account
+
+labels: {}
+
+annotations: {}
+
+tolerations:
+
+priorityClassName: ""
+
+configMap:
+    config:
+        "aws":
+            "log_aws_service_filter_objects": true
+            "config_update_interval_sec": 300
+        "aws_config":
+            "aws_metric_config":
+                "application_elb_detailed_metrics_enabled": false
+                "default_range_seconds": 300
+                "default_sampling_seconds": 300
+                "ebs_detailed_metrics_enabled": false
+                "ec2_detailed_metrics_enabled": false
+                "elb_detailed_metrics_enabled": true
+                "network_elb_detailed_metrics_enabled": false
+                "lambda_detailed_metrics_enabled": false
+                "range_seconds": 60
+                "rds_detailed_metrics_enabled": true
+                "s3_detailed_metrics_enabled": false
+                "sampling_seconds": 60
+                "s3_metric_delay_sec": 240
+            "aws_filters":
+                "match":
+                -   "tag_name": "opscruise"
+                    "tag_value":
+                    -   "true"
+                "tag_based_filter_enabled": false
+        "gateway_config":
+            "OC_Gateway_Id": "AW-01"
+            "OC_Heartbeat_Interval_sec": 60
+            "OC_DataCompression": false
+        "messaging":
+            "kafka":
+                "consumer":
+                    "net":
+                        "sasl":
+                            "enable": true
+                        "tls":
+                            "enable": true
+                "producer":
+                    "number_of_producers": 1
+                    "flush":
+                        "bytes": 1572864
+                        "frequency": 1000
+                    "max_message_bytes": 20971520
+                    "net":
+                        "sasl":
+                            "enable": true
+                        "tls":
+                            "enable": true
+        "saf":
+            "file_compress": true
+            "max_file_size": 50
+            "max_files": 10
+            "store_path": "/var/opscruise/store"

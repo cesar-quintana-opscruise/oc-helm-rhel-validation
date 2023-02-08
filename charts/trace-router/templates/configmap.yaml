@@ -1,0 +1,8 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: trace-router-routes-config
+  namespace: {{ .Release.Namespace }}
+data:
+  traceRouteEndpoint.json: |-
+    {{- toJson .Values.configMap.traceRouteEndpoints | nindent 4 }}

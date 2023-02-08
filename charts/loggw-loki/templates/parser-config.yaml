@@ -1,0 +1,8 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Values.parserConfig.meta.name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  parser-config.json: |-
+    {{ .Files.Get .Values.parserConfig.file | nindent 4 }}

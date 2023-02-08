@@ -1,0 +1,433 @@
+# Default values for azuregw.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+image:
+  repository: opscruiseindia/azuregw
+  azuregw_tag: <VERSION>
+  pullPolicy: IfNotPresent
+
+envFrom:
+  configMapRef: azuregw-env-config
+  secretJgatewayRef: jgateway-secret
+  credsAzureRef: azure-creds
+
+volumeMounts:
+  azureConfig:
+    name: azuregw-config
+    mountPath: /opt/opscruise/configs/azureGatewayConfig.json
+    subPath: azureGatewayConfig.json
+  azureCert:
+    name: azuregw-cert
+    mountPath: /etc/ssl/certs/azuregw-cert.pem
+    subPath: azuregw-cert.pem
+    
+
+imagePullSecrets:
+  name: oc-docker-creds
+
+restartPolicy: Always
+
+secret:
+  secretName: oc-gw-certs
+
+volumes:
+  azureConfig:
+    name: azuregw-config
+    configMap:
+      name: azuregw-config
+  azureCert:
+    name: azuregw-cert
+    secret:
+      secretName: oc-gw-certs
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1024Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+    
+#env config yaml
+config:
+  meta:
+    name: azuregw-env-config
+  oauthWithSsl: "true"
+  oauthLoginEndpoint: "/protocol/openid-connect/token"
+  oauthLoginGrantType: "client_credentials"
+  oauthLoginScope: "openid"
+  oauthIntrospectEndpoint: "/protocol/openid-connect/token/introspect"
+  oauthAcceptUnsecureServer: "false"
+  kafka:
+    sasl: "true"
+  azure:
+    authLocation: "/opt/opscruise/configs/azureauth.txt"
+    azureGatewayJson: "/opt/opscruise/configs/azureGatewayConfig.json"
+  quarkus:
+    httpPort: "8093"
+  gatewayName: "AZUREGW"
+  gatewayKind: "azure"
+logLevel: "INFO"
+
+
+labels: {}
+
+annotations: {}
+
+tolerations:
+
+priorityClassName: ""
+
+azureCredentials:
+- azureauth_clientId: azureauth_clientId
+  azureauth_tenantId: azureauth_tenantId
+  azureauth_clientSecret: azureauth_clientSecret
+
+configMap:
+  config:
+    "pollIntervalsSeconds":
+        "resourceEngine": 30
+        "configEngine": 600
+        "metricEngine": 30
+        "eventEngine": 30
+    "resourceSettings":
+        "microsoft.compute/virtualmachines":
+            "metricTypes":
+                -   "Percentage CPU"
+                -   "Disk Read Bytes"
+                -   "Disk Write Bytes"
+                -   "Disk Read Operations/Sec"
+                -   "Disk Write Operations/Sec"
+                -   "Data Disk Read Bytes/Sec"
+                -   "Data Disk Write Bytes/Sec"
+                -   "Data Disk Read Operations/Sec"
+                -   "Data Disk Write Operations/Sec"
+                -   "Data Disk Queue Depth"
+                -   "OS Disk Read Bytes/Sec"
+                -   "OS Disk Write Bytes/Sec"
+                -   "OS Disk Read Operations/Sec"
+                -   "OS Disk Write Operations/Sec"
+                -   "OS Disk Queue Depth"
+                -   "Inbound Flows"
+                -   "Outbound Flows"
+                -   "Inbound Flows Maximum Creation Rate"
+                -   "Outbound Flows Maximum Creation Rate"
+                -   "Network In Total"
+                -   "Network Out Total"
+            "timeGrain": "PT5M"
+        "microsoft.network/loadbalancers" :
+            "metricTypes" :
+                -   "VipAvailability"
+                -   "DipAvailability"
+                -   "ByteCount"
+                -   "PacketCount"
+                -   "SYNCount"
+                -   "SnatConnectionCount"
+                -   "AllocatedSnatPorts"
+                -   "UsedSnatPorts"
+            "timeGrain": "PT5M"
+        "microsoft.network/applicationgateways" :
+            "metricTypes" :
+                -   "Throughput"
+                -   "UnhealthyHostCount"
+                -   "HealthyHostCount"
+                -   "TotalRequests"
+                -   "AvgRequestCountPerHealthyHost"
+                -   "FailedRequests"
+                -   "ResponseStatus"
+                -   "CurrentConnections"
+                -   "CpuUtilization"
+            "timeGrain": "PT5M"
+        "microsoft.compute/disks" :
+            "metricTypes" :
+                -   "Composite Disk Read Bytes/sec"
+                -   "Composite Disk Read Operations/sec"
+                -   "Composite Disk Write Bytes/sec"
+                -   "Composite Disk Write Operations/sec"
+            "timeGrain": "PT5M"
+        "microsoft.documentdb/databaseaccounts":
+            "metricTypes":
+                -   "CreateAccount"
+                -   "CassandraKeyspaceUpdate"
+                -   "GremlinGraphDelete"
+                -   "CassandraTableCreate"
+                -   "MetadataRequests"
+                -   "DataUsage"
+                -   "IndexUsage"
+                -   "GremlinDatabaseCreate"
+                -   "GremlinGraphUpdate"
+                -   "CassandraTableDelete"
+                -   "CassandraConnectorAvgReplicationLatency"
+                -   "CassandraRequestCharges"
+                -   "CassandraRequests"
+                -   "DeleteAccount"
+                -   "GremlinDatabaseDelete"
+                -   "MongoDBDatabaseUpdate"
+                -   "MongoDatabaseDelete"
+                -   "MongoDatabaseThroughputUpdate"
+                -   "MongoRequests"
+                -   "MongoRequestsDelete"
+                -   "MongoRequestsInsert"
+                -   "MongoRequestsQuery"
+                -   "MongoRequestsUpdate"
+                -   "ServerSideLatency"
+                -   "SqlContainerThroughputUpdate"
+                -   "SqlDatabaseCreate"
+                -   "SqlDatabaseThroughputUpdate"
+                -   "TableTableCreate"
+                -   "UpdateAccountKeys"
+                -   "TotalRequests"
+                -   "IntegratedCacheSize"
+                -   "IntegratedCacheEvictedEntriesSize"
+                -   "DedicatedGatewayRequests"
+                -   "CassandraConnectionClosures"
+                -   "DocumentQuota"
+                -   "AvailableStorage"
+                -   "DocumentCount"
+                -   "CassandraKeyspaceDelete"
+                -   "GremlinGraphCreate"
+                -   "MongoCollectionDelete"
+                -   "MongoCollectionUpdate"
+                -   "MongoDBDatabaseCreate"
+                -   "MongoRequestsCount"
+                -   "NormalizedRUConsumption"
+                -   "RemoveRegion"
+                -   "ServiceAvailability"
+                -   "SqlContainerCreate"
+                -   "SqlContainerDelete"
+                -   "SqlContainerUpdate"
+                -   "TableTableDelete"
+                -   "TotalRequestUnits"
+                -   "UpdateAccountReplicationSettings"
+                -   "GremlinDatabaseThroughputUpdate"
+                -   "AutoscaleMaxThroughput"
+                -   "CassandraKeyspaceCreate"
+                -   "AddRegion"
+                -   "CassandraTableUpdate"
+                -   "CassandraConnectorReplicationHealthStatus"
+                -   "GremlinDatabaseUpdate"
+                -   "MongoCollectionCreate"
+                -   "CassandraKeyspaceThroughputUpdate"
+                -   "CassandraTableThroughputUpdate"
+                -   "GremlinGraphThroughputUpdate"
+                -   "MongoCollectionThroughputUpdate"
+                -   "MongoRequestCharge"
+                -   "ProvisionedThroughput"
+                -   "RegionFailover"
+                -   "ReplicationLatency"
+                -   "SqlDatabaseDelete"
+                -   "SqlDatabaseUpdate"
+                -   "TableTableThroughputUpdate"
+                -   "TableTableUpdate"
+                -   "UpdateAccountNetworkSettings"
+                -   "UpdateDiagnosticsSettings"
+                -   "IntegratedCacheHitRate"
+                -   "IntegratedCacheTTLExpirationCount"
+            "timeGrain": "PT5M"
+        "microsoft.cache/redis" :
+            "metricTypes" :
+                -   "connectedclients"
+                -   "totalcommandsprocessed"
+                -   "cachehits"
+                -   "cachemisses"
+                -   "cachemissrate"
+                -   "getcommands"
+                -   "setcommands"
+                -   "operationsPerSecond"
+                -   "evictedkeys"
+                -   "totalkeys"
+                -   "expiredkeys"
+                -   "usedmemory"
+                -   "usedmemorypercentage"
+                -   "usedmemoryRss"
+                -   "serverLoad"
+                -   "cacheWrite"
+                -   "cacheRead"
+                -   "allconnectedclients"
+                -   "alltotalcommandsprocessed"
+                -   "allcachehits"
+                -   "allcachemisses"
+                -   "allgetcommands"
+                -   "allsetcommands"
+                -   "alloperationsPerSecond"
+                -   "allevictedkeys"
+                -   "alltotalkeys"
+                -   "allexpiredkeys"
+                -   "allusedmemory"
+                -   "allusedmemorypercentage"
+                -   "allusedmemoryRss"
+                -   "allserverLoad"
+                -   "allcacheWrite"
+                -   "allcacheRead"
+                -   "percentProcessorTime"
+                -   "cacheLatency"
+                -   "errors"
+                -   "connectedclients0"
+                -   "totalcommandsprocessed0"
+                -   "cachehits0"
+                -   "cachemisses0"
+                -   "getcommands0"
+                -   "setcommands0"
+                -   "operationsPerSecond0"
+                -   "evictedkeys0"
+                -   "totalkeys0"
+                -   "expiredkeys0"
+                -   "usedmemory0"
+                -   "usedmemoryRss0"
+                -   "serverLoad0"
+                -   "cacheWrite0"
+                -   "cacheRead0"
+                -   "percentProcessorTime0"
+                -   "connectedclients1"
+                -   "totalcommandsprocessed1"
+                -   "cachehits1"
+                -   "cachemisses1"
+                -   "getcommands1"
+                -   "setcommands1"
+                -   "operationsPerSecond1"
+                -   "evictedkeys1"
+                -   "totalkeys1"
+                -   "expiredkeys1"
+                -   "usedmemory1"
+                -   "usedmemoryRss1"
+                -   "serverLoad1"
+                -   "cacheWrite1"
+                -   "cacheRead1"
+                -   "percentProcessorTime1"
+                -   "connectedclients2"
+                -   "totalcommandsprocessed2"
+                -   "cachehits2"
+                -   "cachemisses2"
+                -   "getcommands2"
+                -   "setcommands2"
+                -   "operationsPerSecond2"
+                -   "evictedkeys2"
+                -   "totalkeys2"
+                -   "expiredkeys2"
+                -   "usedmemory2"
+                -   "usedmemoryRss2"
+                -   "serverLoad2"
+                -   "cacheWrite2"
+                -   "cacheRead2"
+                -   "percentProcessorTime2"
+                -   "connectedclients3"
+                -   "totalcommandsprocessed3"
+                -   "cachehits3"
+                -   "cachemisses3"
+                -   "getcommands3"
+                -   "setcommands3"
+                -   "operationsPerSecond3"
+                -   "evictedkeys3"
+                -   "totalkeys3"
+                -   "expiredkeys3"
+                -   "usedmemory3"
+                -   "usedmemoryRss3"
+                -   "serverLoad3"
+                -   "cacheWrite3"
+                -   "cacheRead3"
+                -   "percentProcessorTime3"
+                -   "connectedclients4"
+                -   "totalcommandsprocessed4"
+                -   "cachehits4"
+                -   "cachemisses4"
+                -   "getcommands4"
+                -   "setcommands4"
+                -   "operationsPerSecond4"
+                -   "evictedkeys4"
+                -   "totalkeys4"
+                -   "expiredkeys4"
+                -   "usedmemory4"
+                -   "usedmemoryRss4"
+                -   "serverLoad4"
+                -   "cacheWrite4"
+                -   "cacheRead4"
+                -   "percentProcessorTime4"
+                -   "connectedclients5"
+                -   "totalcommandsprocessed5"
+                -   "cachehits5"
+                -   "cachemisses5"
+                -   "getcommands5"
+                -   "setcommands5"
+                -   "operationsPerSecond5"
+                -   "evictedkeys5"
+                -   "totalkeys5"
+                -   "expiredkeys5"
+                -   "usedmemory5"
+                -   "usedmemoryRss5"
+                -   "serverLoad5"
+                -   "cacheWrite5"
+                -   "cacheRead5"
+                -   "percentProcessorTime5"
+                -   "connectedclients6"
+                -   "totalcommandsprocessed6"
+                -   "cachehits6"
+                -   "cachemisses6"
+                -   "getcommands6"
+                -   "setcommands6"
+                -   "operationsPerSecond6"
+                -   "evictedkeys6"
+                -   "totalkeys6"
+                -   "expiredkeys6"
+                -   "usedmemory6"
+                -   "usedmemoryRss6"
+                -   "serverLoad6"
+                -   "cacheWrite6"
+                -   "cacheRead6"
+                -   "percentProcessorTime6"
+                -   "connectedclients7"
+                -   "totalcommandsprocessed7"
+                -   "cachehits7"
+                -   "cachemisses7"
+                -   "getcommands7"
+                -   "setcommands7"
+                -   "operationsPerSecond7"
+                -   "evictedkeys7"
+                -   "totalkeys7"
+                -   "expiredkeys7"
+                -   "usedmemory7"
+                -   "usedmemoryRss7"
+                -   "serverLoad7"
+                -   "cacheWrite7"
+                -   "cacheRead7"
+                -   "percentProcessorTime7"
+                -   "connectedclients8"
+                -   "totalcommandsprocessed8"
+                -   "cachehits8"
+                -   "cachemisses8"
+                -   "getcommands8"
+                -   "setcommands8"
+                -   "operationsPerSecond8"
+                -   "evictedkeys8"
+                -   "totalkeys8"
+                -   "expiredkeys8"
+                -   "usedmemory8"
+                -   "usedmemoryRss8"
+                -   "serverLoad8"
+                -   "cacheWrite8"
+                -   "cacheRead8"
+                -   "percentProcessorTime8"
+                -   "connectedclients9"
+                -   "totalcommandsprocessed9"
+                -   "cachehits9"
+                -   "cachemisses9"
+                -   "getcommands9"
+                -   "setcommands9"
+                -   "operationsPerSecond9"
+                -   "evictedkeys9"
+                -   "totalkeys9"
+                -   "expiredkeys9"
+                -   "usedmemory9"
+                -   "usedmemoryRss9"
+                -   "serverLoad9"
+                -   "cacheWrite9"
+                -   "cacheRead9"
+                -   "percentProcessorTime9"
+            "timeGrain" : "PT5M"
+    "serviceTag" : "OpsCruise"
+    "configsTag" : "OpsCruise_Configs"
+    "metricsTag" : "OpsCruise_Metrics"
+    "eventsTag" : "OpsCruise_Events"
+    "enabledValue" : "Enabled"
+    "filteringEnabled": false

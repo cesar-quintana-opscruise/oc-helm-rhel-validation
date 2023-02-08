@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+
+---
+{{- range $creds := .Values.azureCredentials }}
+{{- with $ }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "azuregw.fullname" . }}-{{ required "azuregw.azureCredentials.name is a required field" $creds.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: azuregw
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    opscruise-chart-version: {{ .Values.global.opscruiseChartVersion }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: azuregw
+  template:
+    metadata:
+      labels:
+        app: azuregw
+        opscruisePerimeter: opscruise
+        opscruiseGroup: gateways
+        opscruiseProduct: azuregw
+        opscruiseStream: opscruise
+        {{- if .Values.labels }}
+        {{- range $label, $val := .Values.labels }}
+        {{ $label }}: {{ $val }}
+        {{- end }}
+        {{- end }}
+      annotations:
+        checksum/env-config: {{ include (print $.Template.BasePath "/env-config.yaml") . | sha256sum }}
+        checksum/gw-config: {{ include (print $.Template.BasePath "/gateway-config.yaml") . | sha256sum }}
+      {{- if .Values.annotations }}
+        {{- range $annotation, $val := .Values.annotations }}
+        {{ $annotation }}: {{ $val }}
+        {{- end }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.azuregw_tag }}"
+          volumeMounts:
+            - name: {{ .Values.volumeMounts.azureConfig.name }}
+              mountPath: {{ .Values.volumeMounts.azureConfig.mountPath }}
+              subPath: {{ .Values.volumeMounts.azureConfig.subPath }}
+            - name: {{ .Values.volumeMounts.azureCert.name }}
+              mountPath: {{ .Values.volumeMounts.azureCert.mountPath }}
+              subPath: {{ .Values.volumeMounts.azureCert.subPath }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.envFrom.configMapRef }}
+            - secretRef:
+                name: {{ .Values.envFrom.secretJgatewayRef }}
+            - secretRef:
+                name: {{ .Values.envFrom.credsAzureRef }}-{{ required "azuregw.azureCredentials.name is a required field" $creds.name }}
+          resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets.name }}
+      volumes:
+        - name: {{ .Values.volumes.azureConfig.name }}
+          configMap:
+            name: {{ .Values.volumes.azureConfig.configMap.name }}
+        - name: {{ .Values.volumes.azureCert.name }}
+          secret:
+            secretName: {{ .Values.volumes.azureCert.secret.secretName }}
+
+      restartPolicy: {{ .Values.restartPolicy }}
+
+      {{- if .Values.tolerations }}
+      tolerations:
+      {{- toYaml .Values.tolerations | nindent 6 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+      {{- toYaml .Values.global.tolerations | nindent 6 }}
+      {{- end }}
+
+      {{- if .Values.affinity }}
+      affinity:
+      {{- toYaml .Values.affinity | nindent 8 }}
+      {{- else if .Values.global.affinity }}
+      affinity:
+      {{- toYaml .Values.global.affinity | nindent 8 }}
+      {{- end }}
+
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
+
+      {{- if .Values.global.hostAliases }}
+      hostAliases:
+        {{- toYaml .Values.global.hostAliases | nindent 6 }}
+      {{- end }}
+---
+{{- end }}
+{{- end }}
